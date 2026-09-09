@@ -20,6 +20,7 @@ import com.cctvhub.app.data.model.Camera
 import com.cctvhub.app.data.model.CameraStatus
 import com.cctvhub.app.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(cameras: List<Camera>) {
     Scaffold(
