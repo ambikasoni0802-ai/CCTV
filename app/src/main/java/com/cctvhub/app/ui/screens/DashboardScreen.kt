@@ -22,7 +22,7 @@ import com.cctvhub.app.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(cameras: List<Camera>) {
+fun DashboardScreen(cameras: List<Camera>, onCameraClick: (Camera) -> Unit, onAddClick: () -> Unit) {
     Scaffold(
         containerColor = BgDeep,
         topBar = {
@@ -32,28 +32,38 @@ fun DashboardScreen(cameras: List<Camera>) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { }, containerColor = AccentCyan) {
+            FloatingActionButton(onClick = onAddClick, containerColor = AccentCyan) {
                 Icon(Icons.Default.Add, contentDescription = "Add Camera", tint = BgDeep)
             }
         }
     ) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(padding).fillMaxSize()
-        ) {
-            items(cameras) { camera ->
-                CameraCard(camera)
+        if (cameras.isEmpty()) {
+            Box(
+                Modifier.padding(padding).fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No cameras yet. Tap + to add one.", color = TextSecondary)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(padding).fillMaxSize()
+            ) {
+                items(cameras) { camera ->
+                    CameraCard(camera, onClick = { onCameraClick(camera) })
+                }
             }
         }
     }
 }
 
 @Composable
-fun CameraCard(camera: Camera) {
+fun CameraCard(camera: Camera, onClick: () -> Unit) {
     Card(
+        onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = BgCard),
         modifier = Modifier.aspectRatio(1f)
