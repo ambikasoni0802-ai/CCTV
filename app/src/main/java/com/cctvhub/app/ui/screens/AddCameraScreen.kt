@@ -27,6 +27,7 @@ fun AddCameraScreen(onSave: (Camera) -> Unit, onBack: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var scanning by remember { mutableStateOf(false) }
+    var scanDone by remember { mutableStateOf(false) }
     var foundDevices by remember { mutableStateOf<List<DiscoveredDevice>>(emptyList()) }
 
     Scaffold(
@@ -46,15 +47,27 @@ fun AddCameraScreen(onSave: (Camera) -> Unit, onBack: () -> Unit) {
                 Button(
                     onClick = {
                         scanning = true
+                        scanDone = false
                         scope.launch {
                             foundDevices = OnvifDiscovery.discoverDevices(context)
                             scanning = false
+                            scanDone = true
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AccentCyan),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(if (scanning) "Scanning network..." else "Scan Network for Cameras", color = BgDeep)
+                }
+            }
+
+            if (scanDone && foundDevices.isEmpty()) {
+                item {
+                    Text(
+                        "No ONVIF cameras found on this WiFi. You can still enter the IP address manually below.",
+                        color = TextSecondary,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
 
